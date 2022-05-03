@@ -1,22 +1,22 @@
-# ExTIME
+# HiTIMED
 
-ExTIME: Extended Tumor Immune Micro-Environment cell mixture deconvolution using DNA methylation and a novel tumor-type-specific hierarchical approach. 
+HiTIMED: HiTIMED: Hierarchical Tumor Immune Microenvironment Epigenetic Deconvolution for accurate cell type resolution in the tumor microenvironment using tumor-type-specific DNA methylation data
 
-The ExTIME deconvolution estimates proportions up to 17 cell types (tumor, epithelial, endothelial, stromal, basophil, eosinophil, neutrophil, dendritic cell, monocyte, B naïve, B memory, CD4T naïve, CD4T memory, CD8T naïve, CD8T memory, T regulatory, and natural killer cells) in 3 major tumor microenvironment components (tumor, immune, angiogenic).
+The HiTIMED deconvolution estimates proportions up to 17 cell types (tumor, epithelial, endothelial, stromal, basophil, eosinophil, neutrophil, dendritic cell, monocyte, B naïve, B memory, CD4T naïve, CD4T memory, CD8T naïve, CD8T memory, T regulatory, and natural killer cells) in 3 major tumor microenvironment components (tumor, immune, angiogenic).
 
 
 ## Installation
 
-devtools::install_github("SalasLab/ExTIME")
+devtools::install_github("SalasLab/HiTIMED")
 
 
 ## Load library 
 
-library(ExTIME)
+library(HiTIMED)
 
-load("data/ExTIME_Library.RDATA")
+load("data/HiTIMED_Library.RDATA")
 
 
 ## Deconvolution function
 
-?ExTIME_deconvolution
+?HiTIMED_deconvolution

@@ -1,8 +1,8 @@
 #' @title
-#' ExTIME_deconvolution
+#' HiTIMED_deconvolution
 #'
 #' @name
-#' ExTIME_deconvolution
+#' HiTIMED_deconvolution
 #'
 #' @description
 #' The function estimates proportions up to 17 cell types in tumor
@@ -30,8 +30,8 @@
 #'
 #' @export
 
-load("data/ExTIME_Library.RDATA")
-ExTIME_deconvolution <- function(tumor_beta, tumor_type, h=6){
+load("data/HiTIMED_Library.RDATA")
+HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6){
   proj2<-as.data.frame(projectCellType_CP(tumor_beta[rownames(eval(as.symbol(paste0(tumor_type,"_h2")))),],
                                           eval(as.symbol(paste0(tumor_type,"_h2"))), lessThanOne = TRUE))
 
