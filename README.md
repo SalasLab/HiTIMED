@@ -6,19 +6,19 @@ The HiTIMED deconvolution estimates proportions up to 17 cell types (tumor, epit
 
 
 ## Installation
-
+```
 devtools::install_github("SalasLab/HiTIMED")
-
+```
 
 ## Load library 
-
+```
 library(HiTIMED)
 
 load("data/HiTIMED_Library.RDATA")
-
+```
 
 ## Deconvolution function
-
+```
 ?HiTIMED_deconvolution
-
+```
 ![Figure1-page-001](https://user-images.githubusercontent.com/32206453/169862267-50e498fd-da1c-4625-a424-84de59438446.jpg)
