@@ -13,6 +13,17 @@
 #'
 #' @param
 #' tumor_type Specify tumor type for microenvironment deconvolution.
+#' BLCA: Bladder urothelial carcinoma, BRCA: Breast invasive carcinoma,
+#' CESC: Cervical squamous cell carcinoma and endocervical adenocarcinoma,
+#' CHOL: Cholangiocarcinoma, COAD: Colon adenocarcinoma, ESCA:
+#' Esophageal carcinoma, HNSC: Head and neck squamous cell carcinoma,
+#' KIRC: Kidney clear cell renal cell carcinoma, LIHC:
+#' Liver hepatocellular carcinoma, LUAD: Lung adenocarcinoma,
+#' LUSC: Lung squamous cell carcinoma, OV: Ovarian addenocarcinoma,
+#' PAAD: Pancreatic adenocarcinoma,
+#' PRAD: Prostate adenocarcinoma, READ: Rectum adenocarcinoma,
+#' STAD: Stomach adenocarcinoma, THCA: Thyroid carcinoma,
+#' UCEC: Uterine corpus endometrial carcinoma
 #'
 #' @param
 #' h Specify the layer of deconvolution in the hierarchical model. Default is 6.
@@ -20,6 +31,31 @@
 #' @return
 #' A matrix with predicted cell proportions in tumor microenvironment.
 #'
+#' @seealso
+#' References \enumerate{
+#' \item Z. Zhang et al. (2022). \emph{HiTIMED: hierarchical tumor immune 
+#' microenvironment epigenetic deconvolution for accurate cell type resolution
+#' in the tumor microenvironment using tumor-type-specific DNA methylation data}
+#' J Transl Med 20, 516 (2022). doi:\href{https://doi.org/10.1186/s12967-022-03736-6}{10.1186/s12967-022-03736-6}. 
+#' \item Zheng X et al. (2017). \emph{Estimating and accounting for tumor 
+#' purity in the analysis of DNA methylation data from cancer studies}. Genome Biol. 
+#' 2017;18(1):17. doi:\href{https://doi.org/10.1186/s13059-016-1143-5}{10.1186/s13059-016-1143-5}. 
+#' \item LA Salas et al. (2022). \emph{Enhanced cell deconvolution of 
+#' peripheral blood using DNA methylation for high-resolution immune 
+#' profiling}. Nat Comm 13, 761 (2022). doi:
+#' \href{https://doi.org/10.1038/s41467-021-27864-7}{10.1038/s41467-021-27864-7}. 
+#' \item LA Salas et al. (2018). \emph{An optimized library for
+#' reference-based deconvolution of whole-blood biospecimens assayed using the
+#' Illumina HumanMethylationEPIC BeadArray}. Genome Biology 19, 64. doi:
+#' \href{https://dx.doi.org/10.1186/s13059-018-1448-7}{10.1186/s13059-018-1448-7}.
+#' \item DC Koestler et al. (2016). \emph{Improving cell mixture deconvolution
+#' by identifying optimal DNA methylation libraries (IDOL)}. BMC bioinformatics.
+#' 17, 120. doi:\href{https://dx.doi.org/10.1186/s12859-016-0943-7}{10.1186/s12859-016-0943-7}.
+#' \item EA Houseman et al. (2012) \emph{DNA methylation arrays as surrogate
+#' measures of cell mixture distribution}. BMC Bioinformatics 13, 86.
+#' doi:\href{https://dx.doi.org/10.1186/s12859-016-0943-7}{10.1186/1471-2105-13-86}.
+#' \item \pkg{minfi} package, tools for analyzing DNA methylation microarrays
+#' }
 #' @import 	minfi
 #'
 #' @import  FlowSorted.Blood.EPIC
@@ -30,7 +66,8 @@
 #'
 #' @export
 
-load("data/HiTIMED_Library.RDATA")
+
+data(HiTIMED_Library)
 HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6){
   proj2<-as.data.frame(projectCellType_CP(tumor_beta[rownames(eval(as.symbol(paste0(tumor_type,"_h2")))),],
                                           eval(as.symbol(paste0(tumor_type,"_h2"))), lessThanOne = TRUE))
