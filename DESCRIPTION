@@ -1,16 +1,24 @@
 Package: HiTIMED
 Type: Package
 Title: HiTIMED
-Version: 0.1.0
-Author: c(person("Ze", "Zhang", role = c("cre", "aut"),
-        email = "ze.zhang.gr@dartmouth.edu"), person(c("Lucas", "A."),
-        "Salas", role = c("aut"),
-        email = "lucas.a.salas.diaz@dartmouth.edu"))
-Maintainer: Ze Zhang <ze.zhang.gr@dartmouth.edu>
-Description: The package estimates proportions up to 17 cell types in tumor microenvironment for 20 types of carcinomas.  
-License: GNU General Public License v.3.0
+Version: 0.99.0
+Authors@R: c(person("Ze", "Zhang", role = c("cre", "aut"),
+            email = "ze.zhang.gr@dartmouth.edu"),
+            person(c("Lucas", "A."), "Salas", role = c("aut"),
+            email = "lucas.a.salas.diaz@dartmouth.edu"))
+Description: Hierarchical deconvolution for to estimate proportions for 17 
+             cell types (tumor, epithelial, endothelial, stromal, basophil, 
+			 eosinophil, neutrophil, dendritic cell, monocyte, B naïve, 
+			 B memory, CD4T naïve, CD4T memory, CD8T naïve, CD8T memory, 
+			 T regulatory, and natural killer cells) in 3 major tumor 
+			 microenvironment components (tumor, immune, angiogenic) for 20 
+			 types of carcinomas.
+License: GPL-3
 Encoding: UTF-8
-LazyData: true
-RoxygenNote: 7.1.2
+LazyData: false
+VignetteBuilder: knitr
+biocViews: ExperimentData, Homo_sapiens_Data, CancerData, MicroarrayData, Genome, MethylationArrayData
+RoxygenNote: 7.2.1
 URL: https://github.com/SalasLab/HiTIMED
-Imports: minfi, dplyr, FlowSorted.Blood.EPIC, tibble
+Imports: dplyr, FlowSorted.Blood.EPIC, tibble, minfi, InfiniumPurify
+Suggests: knitr, rmarkdown, testthat 
