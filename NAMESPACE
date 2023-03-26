@@ -3,5 +3,6 @@
 export(HiTIMED_deconvolution)
 import(FlowSorted.Blood.EPIC)
 import(dplyr)
-import(minfi)
 import(tibble)
+importFrom(minfi,getBeta)
+importFrom(minfi,preprocessRaw)
