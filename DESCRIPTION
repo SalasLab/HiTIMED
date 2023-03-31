@@ -17,7 +17,7 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: false
 VignetteBuilder: knitr
-biocViews: ExperimentData, Homo_sapiens_Data, CancerData, MicroarrayData, Genome, MethylationArrayData
+biocViews: ExperimentData, Homo_sapiens_Data, CancerData, MicroarrayData, Genome, MethylationArrayData, ExperimentHub
 RoxygenNote: 7.2.1
 URL: https://github.com/SalasLab/HiTIMED
 Imports: dplyr, FlowSorted.Blood.EPIC, tibble, minfi, InfiniumPurify
