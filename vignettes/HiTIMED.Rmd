@@ -13,9 +13,13 @@ vignette: >
 knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE, 
                         cache.lazy = FALSE,collapse = TRUE, comment = "#>"
 )
-library(HiTIMED)
 ```
 
+**Loading package:**  
+```{r eval=TRUE}
+library(HiTIMED)
+
+```
 The HiTIMED package contains reference libraries derived from 
 Illumina HumanMethylation450K DNA methylation 
 microarrays (Zhang Z, Salas LA et al. 2022).
@@ -29,18 +33,8 @@ of carcinomas using a modified version of the algorithm constrained
 projection/quadratic programming described in Houseman et al. 2012. 
 
 **Objects included:**  
-1. *HiTIMED_Library* contains 240 libraries for deconvolution  
-```{r eval=FALSE}
-data("HiTIMED_Library") 
-```  
 
-2. *Example_Beta* contains a methylation beta matrix for 3 colon adenocarcinoma
-samples from TCGA for HiTIMED function testing.
-```{r eval=FALSE}
-data("Example_Beta.rda") 
-```  
-
-**HiTIMED_deconvolution function for tumor microenvironment deconvolution:**  
+*HiTIMED_deconvolution function for tumor microenvironment deconvolution:* 
  
  We offer the function HiTIMED_deconvolution to estimate proportions for 17 
  cell types (tumor, epithelial, endothelial, stromal, basophil, eosinophil, 
@@ -53,18 +47,13 @@ data("Example_Beta.rda")
 ```{r eval=TRUE}
 # Step 1: Load example data
 data("Example_Beta") 
-# Note: If your machine does not allow access to internet you can download
-# and save the file. Then load it manually into the R environment
+library(ExperimentHub)
+Example_Beta<-query(ExperimentHub(), "HiTIMED")[["EH8092"]]
 
 
-# Step 2: Load the library
-data("HiTIMED_Library")
-
-
-# Step 3: Run HiTIMED and show results
+# Step 2: Run HiTIMED and show results
 HiTIMED_result<-HiTIMED_deconvolution(Example_Beta,"COAD",6,"tumor")
 head(HiTIMED_result)
-
 
 ```
 

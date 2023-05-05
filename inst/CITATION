@@ -1,0 +1,18 @@
+c(
+    bibentry(bibtype = "Article",
+        key = "HiTIMED",
+        title = "HiTIMED: hierarchical tumor immune microenvironment epigenetic deconvolution for accurate cell type resolution in the tumor microenvironment using tumor-type-specific DNA methylation data",
+        author = c(
+            person(given = "Ze", family = "Zhang"),
+            person(given = "John", family = "Wiencke"),
+            person(given = "Karl", family = "Kelsey"),
+            person(given = "Brock", family = "Christensen"),
+			person(given = "Lucas", family = "Salas")),
+        year = "2022", month = "Nov", journal = "Journal of Translational Medicine",
+        volume = "20", number = "516",
+        doi = "10.1186/s12967-022-03736-6", pubmed = "36348337"
+        language = "eng",
+        header = "HiTIMED pipeline is described in:"),
+    
+ 
+)
