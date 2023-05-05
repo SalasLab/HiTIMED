@@ -14,7 +14,6 @@ devtools::install_github("SalasLab/HiTIMED")
 ## Load library 
 ```
 library(HiTIMED)
-
 ```
 
 ## Deconvolution function
