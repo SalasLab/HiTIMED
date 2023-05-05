@@ -15,7 +15,6 @@ devtools::install_github("SalasLab/HiTIMED")
 ```
 library(HiTIMED)
 
-data("HiTIMED_Library")
 ```
 
 ## Deconvolution function
@@ -25,7 +24,7 @@ data("HiTIMED_Library")
 
 ## Example
 ```
-data("Example_Beta")
+Example_Beta<-query(ExperimentHub(), "HiTIMED")[["EH8092"]]
 HiTIMED_result<-HiTIMED_deconvolution(Example_Beta,"COAD",6,"tumor")
 head(HiTIMED_result)
 ```

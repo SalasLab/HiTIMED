@@ -3,7 +3,7 @@ Type: Package
 Title: HiTIMED
 Version: 0.99.0
 Authors@R: c(person("Ze", "Zhang", role = c("cre", "aut"),
-            email = "ze.zhang.gr@dartmouth.edu"),
+            email = "ze.zhang.gr@dartmouth.edu", comment=c(ORCID="0000-0001-9854-5823")),
             person(c("Lucas", "A."), "Salas", role = c("aut"),
             email = "lucas.a.salas.diaz@dartmouth.edu"))
 Description: Hierarchical deconvolution for to estimate proportions for 17 
@@ -17,8 +17,10 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: false
 VignetteBuilder: knitr
-biocViews: ExperimentData, Homo_sapiens_Data, CancerData, MicroarrayData, Genome, MethylationArrayData, ExperimentHub
-RoxygenNote: 7.2.1
+biocViews: ExperimentData, Homo_sapiens_Data, CancerData, MicroarrayData, Genome, MethylationArrayData, ExperimentHub, Tissue, BreastCancerData, ColonCancerData,
+           KidneyCancerData, LungCancerData, OvarianCancerData, ProstateCancerData, PackageTypeData
+RoxygenNote: 7.2.3
 URL: https://github.com/SalasLab/HiTIMED
-Imports: dplyr, FlowSorted.Blood.EPIC, tibble, minfi, InfiniumPurify
+Imports: dplyr, FlowSorted.Blood.EPIC, tibble, minfi, InfiniumPurify, ExperimentHub
 Suggests: knitr, rmarkdown, testthat 
+BugReports: https://github.com/SalasLab/HiTIMED/issues.

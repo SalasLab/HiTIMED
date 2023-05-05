@@ -9,7 +9,7 @@
 #' microenvironment for 20 types of carcinomas.
 #'
 #' @param
-#' tumor_beta Methylation beta matrix from the bulk tumor samples.
+#' tumor_beta Methylation beta matrix or data frame from the bulk tumor samples.
 #'
 #' @param
 #' tumor_type Specify tumor type for microenvironment deconvolution.
@@ -26,7 +26,8 @@
 #' UCEC: Uterine corpus endometrial carcinoma
 #'
 #' @param
-#' h Specify the layer of deconvolution in the hierarchical model. Default is 6.
+#' h Numeric variable. 
+#' Specify the layer of deconvolution in the hierarchical model. Default is 6.
 #'
 #' @param
 #' tissue_type specify whether the tissue is tumor. Default is tumor. If not
@@ -37,38 +38,11 @@
 #'
 #' @examples
 #' #Step 1: Load example data
-#' data("Example_Beta")
-#' #Step 2: Load the library
-#' data("HiTIMED_Library")
-#' #Step 3: Run HiTIMED and show results
+#' library(ExperimentHub)
+#' Example_Beta<-query(ExperimentHub(), "HiTIMED")[["EH8092"]]
+#' #Step 2: Run HiTIMED and show results
 #' HiTIMED_result<-HiTIMED_deconvolution(Example_Beta,"COAD",6,"tumor")
 #' head(HiTIMED_result)
-#'
-#' @seealso
-#' References \enumerate{
-#' \item Z. Zhang et al. (2022). \emph{HiTIMED: hierarchical tumor immune
-#' microenvironment epigenetic deconvolution for accurate cell type resolution
-#' in the tumor microenvironment using tumor-type-specific DNA methylation data}
-#' J Transl Med 20, 516 (2022). doi:\href{https://doi.org/10.1186/s12967-022-03736-6}{10.1186/s12967-022-03736-6}.
-#' \item Zheng X et al. (2017). \emph{Estimating and accounting for tumor
-#' purity in the analysis of DNA methylation data from cancer studies}. Genome Biol.
-#' 2017;18(1):17. doi:\href{https://doi.org/10.1186/s13059-016-1143-5}{10.1186/s13059-016-1143-5}.
-#' \item LA Salas et al. (2022). \emph{Enhanced cell deconvolution of
-#' peripheral blood using DNA methylation for high-resolution immune
-#' profiling}. Nat Comm 13, 761 (2022). doi:
-#' \href{https://doi.org/10.1038/s41467-021-27864-7}{10.1038/s41467-021-27864-7}.
-#' \item LA Salas et al. (2018). \emph{An optimized library for
-#' reference-based deconvolution of whole-blood biospecimens assayed using the
-#' Illumina HumanMethylationEPIC BeadArray}. Genome Biology 19, 64. doi:
-#' \href{https://dx.doi.org/10.1186/s13059-018-1448-7}{10.1186/s13059-018-1448-7}.
-#' \item DC Koestler et al. (2016). \emph{Improving cell mixture deconvolution
-#' by identifying optimal DNA methylation libraries (IDOL)}. BMC bioinformatics.
-#' 17, 120. doi:\href{https://dx.doi.org/10.1186/s12859-016-0943-7}{10.1186/s12859-016-0943-7}.
-#' \item EA Houseman et al. (2012) \emph{DNA methylation arrays as surrogate
-#' measures of cell mixture distribution}. BMC Bioinformatics 13, 86.
-#' doi:\href{https://dx.doi.org/10.1186/s12859-016-0943-7}{10.1186/1471-2105-13-86}.
-#' \item \pkg{minfi} package, tools for analyzing DNA methylation microarrays
-#' }
 #'
 #' @import  FlowSorted.Blood.EPIC
 #'
@@ -77,18 +51,46 @@
 #' @import  InfiniumPurify
 #'
 #' @import  tibble
-#'
+#' 
+#' @import  ExperimentHub
+#' 
 #' @importFrom minfi preprocessRaw
 #'
 #' @importFrom minfi getBeta
 #'
 #' @export
 
-HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6, tissue_type="tumor"){
+HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6, 
+                                  tissue_type="tumor"){
 
-
-  proj2<-as.data.frame(projectCellType_CP(tumor_beta[rownames(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h2")]])),],
-                                          as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h2")]])), lessThanOne = TRUE))
+  if ((!is(h, "numeric"))) {
+    stop(strwrap(sprintf(
+      "object is of class '%s', but needs to be of
+                                class 'numeric' to use this function",
+      class(h)
+    ),
+    width = 80, prefix = " ",
+    initial = ""
+    ))
+  }
+  
+  if ((!is(tumor_beta, "matrix")) && (!is(tumor_beta, "data.frame"))) {
+    stop(strwrap(sprintf(
+      "object is of class '%s', but needs to be of
+                                class 'matrix' 'data.frame' 
+      to use this function",
+      class(tumor_beta)
+    ),
+    width = 80, prefix = " ",
+    initial = ""
+    ))
+  }
+  HiTIMED_Library<-query(ExperimentHub(), "HiTIMED")[["EH8093"]]
+  proj2<-as.data.frame(projectCellType_CP(
+    tumor_beta[rownames(as.data.frame(
+      HiTIMED_Library[[paste0(tumor_type,"_h2")]])),],
+      as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h2")]])), 
+      lessThanOne = TRUE))
 
 
   proj2[proj2<1e-05]<-0
@@ -98,8 +100,11 @@ HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6, tissue_type="tumo
     proj2[i,]<-z*proj2[i,]
   }
 
-  proj3A<-as.data.frame(projectCellType_CP(tumor_beta[rownames(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h3A")]])),],
-                                           as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h3A")]])), lessThanOne = TRUE))
+  proj3A<-as.data.frame(projectCellType_CP(
+    tumor_beta[rownames(as.data.frame(
+      HiTIMED_Library[[paste0(tumor_type,"_h3A")]])),],
+      as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h3A")]])), 
+      lessThanOne = TRUE))
 
   proj3A[proj3A<1e-05]<-0
 
@@ -108,8 +113,11 @@ HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6, tissue_type="tumo
     proj3A[i,]<-z*proj3A[i,]
   }
 
-  proj3B<-as.data.frame(projectCellType_CP(tumor_beta[rownames(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h3B")]])),],
-                                           as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h3B")]])), lessThanOne = TRUE))
+  proj3B<-as.data.frame(projectCellType_CP(
+    tumor_beta[rownames(as.data.frame(
+    HiTIMED_Library[[paste0(tumor_type,"_h3B")]])),],
+    as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h3B")]])), 
+    lessThanOne = TRUE))
 
   proj3B[proj3B<1e-05]<-0
 
@@ -120,8 +128,11 @@ HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6, tissue_type="tumo
 
 
 
-  proj4A<-as.data.frame(projectCellType_CP(tumor_beta[rownames(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h4A")]])),],
-                                           as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h4A")]])), lessThanOne = TRUE))
+  proj4A<-as.data.frame(projectCellType_CP(
+    tumor_beta[rownames(as.data.frame(
+    HiTIMED_Library[[paste0(tumor_type,"_h4A")]])),],
+    as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h4A")]])), 
+    lessThanOne = TRUE))
 
   proj4A[proj4A<1e-05]<-0
 
@@ -130,8 +141,11 @@ HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6, tissue_type="tumo
     proj4A[i,]<-z*proj4A[i,]
   }
 
-  proj4B<-as.data.frame(projectCellType_CP(tumor_beta[rownames(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h4B")]])),],
-                                           as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h4B")]])), lessThanOne = TRUE))
+  proj4B<-as.data.frame(projectCellType_CP(
+    tumor_beta[rownames(as.data.frame(
+    HiTIMED_Library[[paste0(tumor_type,"_h4B")]])),],
+    as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h4B")]])), 
+    lessThanOne = TRUE))
 
 
   proj4B[proj4B<1e-05]<-0
@@ -143,8 +157,11 @@ HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6, tissue_type="tumo
 
 
 
-  proj5A<-as.data.frame(projectCellType_CP(tumor_beta[rownames(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h5A")]])),],
-                                           as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h5A")]])), lessThanOne = TRUE))
+  proj5A<-as.data.frame(projectCellType_CP(
+    tumor_beta[rownames(as.data.frame(
+      HiTIMED_Library[[paste0(tumor_type,"_h5A")]])),],
+      as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h5A")]])), 
+      lessThanOne = TRUE))
 
   proj5A[proj5A<1e-05]<-0
 
@@ -154,8 +171,11 @@ HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6, tissue_type="tumo
   }
 
 
-  proj5B<-as.data.frame(projectCellType_CP(tumor_beta[rownames(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h5B")]])),],
-                                           as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h5B")]])), lessThanOne = TRUE))
+  proj5B<-as.data.frame(projectCellType_CP(
+    tumor_beta[rownames(as.data.frame(
+      HiTIMED_Library[[paste0(tumor_type,"_h5B")]])),],
+      as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h5B")]])), 
+      lessThanOne = TRUE))
 
 
   proj5B[proj5B<1e-05]<-0
@@ -167,8 +187,11 @@ HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6, tissue_type="tumo
 
 
 
-  proj5C<-as.data.frame(projectCellType_CP(tumor_beta[rownames(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h5C")]])),],
-                                           as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h5C")]])), lessThanOne = TRUE))
+  proj5C<-as.data.frame(projectCellType_CP(
+    tumor_beta[rownames(as.data.frame(
+      HiTIMED_Library[[paste0(tumor_type,"_h5C")]])),],
+      as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h5C")]])), 
+      lessThanOne = TRUE))
 
   proj5C[proj5C<1e-05]<-0
 
@@ -178,8 +201,11 @@ HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6, tissue_type="tumo
   }
 
 
-  proj5D<-as.data.frame(projectCellType_CP(tumor_beta[rownames(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h5D")]])),],
-                                           as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h5D")]])), lessThanOne = TRUE))
+  proj5D<-as.data.frame(projectCellType_CP(
+    tumor_beta[rownames(as.data.frame(
+      HiTIMED_Library[[paste0(tumor_type,"_h5D")]])),],
+      as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h5D")]])), 
+      lessThanOne = TRUE))
 
   proj5D[proj5D<1e-05]<-0
 
@@ -189,8 +215,11 @@ HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6, tissue_type="tumo
   }
 
 
-  proj6A<-as.data.frame(projectCellType_CP(tumor_beta[rownames(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h6A")]])),],
-                                           as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h6A")]])), lessThanOne = TRUE))
+  proj6A<-as.data.frame(projectCellType_CP(
+    tumor_beta[rownames(as.data.frame(
+      HiTIMED_Library[[paste0(tumor_type,"_h6A")]])),],
+      as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h6A")]])), 
+      lessThanOne = TRUE))
 
   proj6A[proj6A<1e-05]<-0
 
@@ -199,19 +228,26 @@ HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6, tissue_type="tumo
     proj6A[i,]<-z*proj6A[i,]
   }
 
-  proj6B<-as.data.frame(projectCellType_CP(tumor_beta[rownames(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h6B")]])),],
-                                           as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h6B")]])), lessThanOne = TRUE))
+  proj6B<-as.data.frame(projectCellType_CP(
+    tumor_beta[rownames(as.data.frame(
+      HiTIMED_Library[[paste0(tumor_type,"_h6B")]])),],
+      as.matrix(as.data.frame(HiTIMED_Library[[paste0(tumor_type,"_h6B")]])), 
+      lessThanOne = TRUE))
 
   proj6B[proj6B<1e-05]<-0
 
   tumor.sample <- colnames(tumor_beta)
-  tumor_beta_iDMC<-tumor_beta[rownames(tumor_beta)%in%rownames(as.data.frame(HiTIMED_Library[paste0("iDMC_",tumor_type)])),]
-  idmc.dat<-as.data.frame(HiTIMED_Library[paste0("iDMC_",tumor_type)])[rownames(tumor_beta_iDMC),]
+  tumor_beta_iDMC<-tumor_beta[rownames(tumor_beta)%in%rownames(as.data.frame(
+    HiTIMED_Library[paste0("iDMC_",tumor_type)])),]
+  idmc.dat<-as.data.frame(
+    HiTIMED_Library[paste0("iDMC_",tumor_type)])[rownames(tumor_beta_iDMC),]
   purity<-c()
 
   for (t in tumor.sample) {
-    beta.adj <- c(tumor_beta_iDMC[idmc.dat[,paste0("iDMC_",tumor_type,".hyper")] == TRUE, t],
-                  1 - tumor_beta_iDMC[idmc.dat[,paste0("iDMC_",tumor_type,".hyper")] == FALSE, t])
+    beta.adj <- c(tumor_beta_iDMC[
+      idmc.dat[,paste0("iDMC_",tumor_type,".hyper")] == TRUE, t],
+                  1 - tumor_beta_iDMC[
+                    idmc.dat[,paste0("iDMC_",tumor_type,".hyper")] == FALSE, t])
     pu <- InfiniumPurify:::.get_peak(beta.adj)
     purity[t] <- pu
   }
@@ -239,7 +275,8 @@ HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6, tissue_type="tumo
   h2_proj<-proj
 
   identical(rownames(proj),rownames(proj3A))
-  proj3A<-proj3A[,-which(colnames(proj3A) %in% c(paste0(tumor_type," Tumor"),"Immune")),
+  proj3A<-proj3A[,-which(colnames(proj3A) %in% 
+                           c(paste0(tumor_type," Tumor"),"Immune")),
                  drop=FALSE]
   proj3A<-proj3A/rowSums(proj3A)
   proj<-cbind(proj[, -which(colnames(proj) %in% c("Angiogenic"))],
@@ -247,7 +284,8 @@ HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6, tissue_type="tumo
   h3A_proj<-proj
 
   identical(rownames(proj),rownames(proj3B))
-  proj3B<-proj3B[,-which(colnames(proj3B) %in% c(paste0(tumor_type," Tumor"),"Angiogenic")),
+  proj3B<-proj3B[,-which(colnames(proj3B) %in% 
+                           c(paste0(tumor_type," Tumor"),"Angiogenic")),
                  drop=FALSE]
   proj3B<-proj3B/rowSums(proj3B)
   proj<-cbind(proj[, -which(colnames(proj) %in% c("Immune"))],
@@ -256,7 +294,8 @@ HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6, tissue_type="tumo
 
 
   identical(rownames(proj),rownames(proj4A))
-  proj4A<-proj4A[,-which(colnames(proj4A) %in% c(paste0(tumor_type," Tumor"),"Lymphocyte","Angiogenic")),
+  proj4A<-proj4A[,-which(colnames(proj4A) %in% c(paste0(tumor_type," Tumor"),
+                                                 "Lymphocyte","Angiogenic")),
                  drop=FALSE]
   proj4A<-proj4A/rowSums(proj4A)
   proj<-cbind(proj[, -which(colnames(proj) %in% c("Myeloid"))],
@@ -265,7 +304,8 @@ HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6, tissue_type="tumo
 
 
   identical(rownames(proj),rownames(proj4B))
-  proj4B<-proj4B[,-which(colnames(proj4B) %in% c(paste0(tumor_type," Tumor"),"Myeloid","Angiogenic")),
+  proj4B<-proj4B[,-which(colnames(proj4B) %in% c(paste0(tumor_type," Tumor"),
+                                                 "Myeloid","Angiogenic")),
                  drop=FALSE]
   proj4B<-proj4B/rowSums(proj4B)
   proj<-cbind(proj[, -which(colnames(proj) %in% c("Lymphocyte"))],
@@ -273,7 +313,8 @@ HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6, tissue_type="tumo
   h4B_proj<-proj
 
   identical(rownames(proj),rownames(proj5A))
-  proj5A<-proj5A[,-which(colnames(proj5A) %in% c(paste0(tumor_type," Tumor"),"Lymphocyte", "Mononuclear","Angiogenic")),
+  proj5A<-proj5A[,-which(colnames(proj5A) %in% c(
+    paste0(tumor_type," Tumor"),"Lymphocyte", "Mononuclear","Angiogenic")),
                  drop=FALSE]
   proj5A<-proj5A/rowSums(proj5A)
   proj<-cbind(proj[, -which(colnames(proj) %in% c("Granulocyte"))],
@@ -282,7 +323,9 @@ HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6, tissue_type="tumo
 
 
   identical(rownames(proj),rownames(proj5B))
-  proj5B<-proj5B[,-which(colnames(proj5B) %in% c(paste0(tumor_type," Tumor"),"Lymphocyte", "Granulocyte","Angiogenic")),
+  proj5B<-proj5B[,-which(colnames(proj5B) %in% 
+                           c(paste0(tumor_type," Tumor"),"Lymphocyte", 
+                             "Granulocyte","Angiogenic")),
                  drop=FALSE]
   proj5B<-proj5B/rowSums(proj5B)
   proj<-cbind(proj[, -which(colnames(proj) %in% c("Mononuclear"))],
@@ -361,23 +404,29 @@ HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6, tissue_type="tumo
   proj[rownames(proja),]<-proja
 
 
-  if(h=="1"){
+  if(h==1){
     output<-proj[,c("Tumor","Other")]
   }else{
-    if(h=="2"){
+    if(h==2){
       output<-proj[,c("Tumor","Immune","Angiogenic")]
     }else{
-      if(h=="3"){
-        output<-proj[,c("Tumor","Lymphocyte", "Myeloid", "Endothelial", "Epithelial", "Stromal")]
+      if(h==3){
+        output<-proj[,c("Tumor","Lymphocyte", "Myeloid", "Endothelial", 
+                        "Epithelial", "Stromal")]
       }else{
-        if(h=="4"){
-          output<-proj[,c("Tumor","Granulocyte", "Mononuclear","Tcell","Bcell","NK","Endothelial", "Epithelial", "Stromal")]
+        if(h==4){
+          output<-proj[,c("Tumor","Granulocyte", "Mononuclear","Tcell","Bcell",
+                          "NK","Endothelial", "Epithelial", "Stromal")]
         }else{
-          if(h=="5"){
-            output<-proj[,c("Tumor","Bas","Eos","Neu","Mono","DC","Bnv","Bmem", "CD4T", "CD8T","NK","Endothelial", "Epithelial", "Stromal")]
+          if(h==5){
+            output<-proj[,c("Tumor","Bas","Eos","Neu","Mono","DC","Bnv","Bmem", 
+                            "CD4T", "CD8T","NK","Endothelial", "Epithelial", 
+                            "Stromal")]
           }else{
-            if(h=="6"){
-              output<-proj[,c("Tumor","Endothelial", "Epithelial", "Stromal","Bnv","Bmem","CD4nv","CD4mem","Treg","CD8nv","CD8mem","Mono","DC","NK","Bas","Eos","Neu")]
+            if(h==6){
+              output<-proj[,c("Tumor","Endothelial", "Epithelial", "Stromal",
+                              "Bnv","Bmem","CD4nv","CD4mem","Treg","CD8nv",
+                              "CD8mem","Mono","DC","NK","Bas","Eos","Neu")]
             }}}}}}
 
 
@@ -387,6 +436,7 @@ HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6, tissue_type="tumo
   output_low<-output %>% filter(Sum == "NaN")
   ID_low<-rownames(output_low)
   if(length(ID_low)!=0){
-    message(paste0("Recommend lower layer deconvolution for ",toString(ID_low)))}
+    message(paste0("Recommend lower layer deconvolution for ",
+                   toString(ID_low)))}
   return(output[,!colnames(output)=="Sum"]*100)
 }
