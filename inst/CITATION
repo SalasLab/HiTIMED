@@ -12,7 +12,7 @@ c(
         volume = "20", number = "516",
         doi = "10.1186/s12967-022-03736-6", pubmed = "36348337",
         language = "eng",
-        header = "HiTIMED pipeline is described in:"),
+        header = "HiTIMED pipeline is described in:")
     
  
 )
