@@ -46,7 +46,6 @@ projection/quadratic programming described in Houseman et al. 2012.
  *see ?HiTIMED_deconvolution for details*  
 ```{r eval=TRUE}
 # Step 1: Load example data
-data("Example_Beta") 
 library(ExperimentHub)
 Example_Beta<-query(ExperimentHub(), "HiTIMED")[["EH8092"]]
 
