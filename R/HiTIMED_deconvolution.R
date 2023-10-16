@@ -86,6 +86,10 @@ HiTIMED_deconvolution <- function(tumor_beta, tumor_type, h=6,
     ))
   }
   HiTIMED_Library<-query(ExperimentHub(), "HiTIMED")[["EH8093"]]
+  for (i in 1:length(HiTIMED_Library)) {
+    HiTIMED_Library[[i]]<-
+      HiTIMED_Library[[i]][rownames(HiTIMED_Library[[i]])%in%rownames(tumor_beta),]
+  }
   proj2<-as.data.frame(projectCellType_CP(
     tumor_beta[rownames(as.data.frame(
       HiTIMED_Library[[paste0(tumor_type,"_h2")]])),],

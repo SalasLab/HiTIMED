@@ -11,14 +11,11 @@ This work is recognized by the Neukom Award and we appreciate the support from t
 devtools::install_github("SalasLab/HiTIMED")
 ```
 
-## Load library 
+## Load libraries 
 ```
 library(HiTIMED)
-```
-
-## Deconvolution function
-```
-?HiTIMED_deconvolution
+library(FlowSorted.Blood.EPIC)
+library(dplyr)
 ```
 
 ## Example
@@ -28,5 +25,22 @@ HiTIMED_result<-HiTIMED_deconvolution(Example_Beta,"COAD",6,"tumor")
 head(HiTIMED_result)
 ```
 
+## EPICv2 Solution
+#### if you're having trouble dowloading v2 annotation files, you can find them at 
+####  https://www.dropbox.com/sh/rbxjhq9zalqq58e/AAABR8kKegXKVMeNJV8a2lJRa?dl=0
+```
+library(IlluminaHumanMethylationEPICv2anno.20a1.hg38)
+library(IlluminaHumanMethylationEPICv2manifest)
+```
+#### dir should be the folder containing EPICv2 IDATs
+```
+v2_RGset = read.metharray.exp("dir",recursive = TRUE) 
+annotation(v2_RGset)["array"] = "IlluminaHumanMethylationEPICv2" #Update annotation files for v2
+annotation(v2_RGset)["annotation"] = "20a1.hg38"
+v2_MSet <-preprocessNoob(v2_RGset)
+v2_Betas<-getBeta(v2_MSet)
+v2_Betas<- sesame::betasCollapseToPfx(v2_Betas)
+HiTIMED_deconvolution(v2_Betas,"COAD",6,"tumor")
+```
 
 ![Figure1-page-001](https://user-images.githubusercontent.com/32206453/169862267-50e498fd-da1c-4625-a424-84de59438446.jpg)
